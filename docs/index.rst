@@ -19,8 +19,8 @@ Get started by creating a `GoogleLogin` instance::
     googlelogin = GoogleLogin()
     googlelogin.init_app(app)
 
-A `flaskext.login.LoginManager` instance is implicitly created in `GoogleLogin.init_app`
-but you can also pass your own::
+A `flaskext.login.LoginManager` instance is implicitly created in
+`GoogleLogin.init_app` but you can also pass your own::
 
     from flask_login import LoginManager
     login_manager = LoginManager()
@@ -33,7 +33,7 @@ but you can also pass your own::
 
         from flask_googlelogin import LoginManager
 
-You then need to specify an OAuth2 callback route::
+Next, you need to specify an OAuth2 callback route::
 
     @app.route('/oauth2callback')
     @googlelogin.oauth2callback
@@ -95,3 +95,4 @@ API
 TODO
 ====
 * OAuth2 `state` support
+* Use `access_token` for `is_authenticated`

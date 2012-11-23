@@ -1,3 +1,7 @@
+"""
+Flask-GoogleLogin
+"""
+
 from functools import wraps
 import httplib2
 
@@ -11,6 +15,7 @@ USERINFO_PROFILE_SCOPE = 'https://www.googleapis.com/auth/userinfo.profile'
 
 
 class GoogleLogin(object):
+    """Main extension class"""
 
     def __init__(self, app=None, login_manager=None):
         if app:
@@ -18,6 +23,8 @@ class GoogleLogin(object):
             self.init_app(app, login_manager)
 
     def init_app(self, app, login_manager=None):
+        """Initialize with app configuration. Existing
+        `flaskext.login.LoginManager` instance can be passed."""
         # Google OAuth2 web server flow
         scopes = app.config.get('GOOGLE_LOGIN_SCOPES', '').split(',')
         if USERINFO_PROFILE_SCOPE not in scopes:
@@ -34,22 +41,14 @@ class GoogleLogin(object):
             self.login_manager = login_manager
         else:
             self.login_manager = LoginManager()
-            self.login_manager.setup_app(app)
+            self.login_manager.init_app(app)
+
+        # Set views to OAuth2 authorization urls
         self.login_manager.login_view = auth_url
         self.login_manager.refresh_view = auth_url
 
-    def oauth2callback(self, view_func):
-        @wraps(view_func)
-        def decorated(*args, **kwargs):
-            userinfo = self.login()
-            if userinfo:
-                kwargs.setdefault('userinfo', userinfo)
-                return view_func(*args, **kwargs)
-            else:
-                return self.login_manager.unauthorized()
-        return decorated
-
     def login(self):
+        """Exchanges code for tokens and returns `userinfo`"""
         code = request.args.get('code')
         if not code:
             abort(400)
@@ -67,3 +66,21 @@ class GoogleLogin(object):
             return
 
         return userinfo
+
+    def oauth2callback(self, view_func):
+        """Decorator for OAuth2 callback. Calls `GoogleLogin.login` then
+        passes results to `view_func`."""
+        @wraps(view_func)
+        def decorated(*args, **kwargs):
+            userinfo = self.login()
+            if userinfo:
+                kwargs.setdefault('userinfo', userinfo)
+                return view_func(*args, **kwargs)
+            else:
+                return self.login_manager.unauthorized()
+        return decorated
+
+    def user_loader(self, func):
+        """Shortcut to `login_manager`'s
+        `flaskext.login.LoginManager.user_loader`"""
+        self.login_manager.user_loader(func)

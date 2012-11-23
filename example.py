@@ -23,7 +23,7 @@ class User(UserMixin):
         self.picture = userinfo['picture']
 
 
-@googlelogin.login_manager.user_loader
+@googlelogin.user_loader
 def get_user(userid):
     return users.get(userid)
 

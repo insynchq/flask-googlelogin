@@ -33,3 +33,9 @@ nosetests.xml
 .mr.developer.cfg
 .project
 .pydevproject
+
+# Rope
+.ropeproject
+
+# Sphinx
+docs/_*

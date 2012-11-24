@@ -20,7 +20,7 @@ class User(UserMixin):
     def __init__(self, userinfo):
         self.id = userinfo['id']
         self.name = userinfo['name']
-        self.picture = userinfo['picture']
+        self.picture = userinfo.get('picture')
 
 
 @googlelogin.user_loader

@@ -50,6 +50,10 @@ class GoogleLogin(object):
         self.login_manager.login_view = auth_url
         self.login_manager.refresh_view = auth_url
 
+        # Clear flashed messages since we redirect to auth immediately
+        self.login_manager.login_message = None
+        self.login_manager.needs_refresh_message = None
+
     def login(self):
         """Exchanges code for tokens and returns `userinfo`"""
         code = request.args.get('code')

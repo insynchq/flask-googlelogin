@@ -18,13 +18,22 @@ class GoogleLogin(object):
     """Main extension class"""
 
     def __init__(self, app=None, login_manager=None):
+        if login_manager:
+            self.login_manager = login_manager
+        else:
+            self.login_manager = LoginManager()
         if app:
             self.app = app
-            self.init_app(app, login_manager)
+            self.init_app(app)
 
     def init_app(self, app, login_manager=None):
         """Initialize with app configuration. Existing
         `flaskext.login.LoginManager` instance can be passed."""
+
+        # Check if login manager has been init
+        if not hasattr(app, 'login_manager'):
+            self.login_manager.init_app(app)
+
         # Google OAuth2 web server flow
         scopes = app.config.get('GOOGLE_LOGIN_SCOPES', '').split(',')
         if USERINFO_PROFILE_SCOPE not in scopes:
@@ -36,12 +45,6 @@ class GoogleLogin(object):
 
         # Step 1) Redirect to auth page
         auth_url = self.flow.step1_get_authorize_url()
-
-        if login_manager:
-            self.login_manager = login_manager
-        else:
-            self.login_manager = LoginManager()
-            self.login_manager.init_app(app)
 
         # Set views to OAuth2 authorization urls
         self.login_manager.login_view = auth_url

@@ -72,16 +72,17 @@ class GoogleLogin(object):
             # TODO: Proper exception handling
             return
 
-        return userinfo
+        return userinfo, credentials
 
     def oauth2callback(self, view_func):
         """Decorator for OAuth2 callback. Calls `GoogleLogin.login` then
         passes results to `view_func`."""
         @wraps(view_func)
         def decorated(*args, **kwargs):
-            userinfo = self.login()
+            userinfo, credentials = self.login()
             if userinfo:
                 kwargs.setdefault('userinfo', userinfo)
+                kwargs.setdefault('credentials', credentials)
                 return view_func(*args, **kwargs)
             else:
                 return self.login_manager.unauthorized()

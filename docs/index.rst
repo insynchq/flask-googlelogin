@@ -37,19 +37,22 @@ Next, you need to specify an OAuth2 callback route::
 
     @app.route('/oauth2callback')
     @googlelogin.oauth2callback
-    def create_or_update_user(userinfo):
-        user = User.filter_by(google_id=userinfo['id']).first()
-        if user:
-            user.name = userinfo['name']
-            user.avatar = userinfo['picture']
+    def create_or_update_user(userinfo=None, credentials=None, **kwargs):
+        if userinfo and credentials:
+            user = User.filter_by(google_id=userinfo['id']).first()
+            if user:
+                user.name = userinfo['name']
+                user.avatar = userinfo['picture']
+            else:
+                user = User(google_id=userinfo['id'],
+                            name=userinfo['name'],
+                            avatar=userinfo['picture'])
+            db.session.add(user)
+            db.session.flush()
+            login_user(user)
+            return redirect(url_for('index'))
         else:
-            user = User(google_id=userinfo['id'],
-                        name=userinfo['name'],
-                        avatar=userinfo['picture'])
-        db.session.add(user)
-        db.session.flush()
-        login_user(user)
-        return redirect(url_for('index'))
+            return googlelogin.login_manager.unauthorized()
 
 Notice that you still have to do the call for `login_user`. Flask-GoogleLogin
 just sets the `login_view` and `refresh_view` of the

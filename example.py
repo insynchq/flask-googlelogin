@@ -34,7 +34,7 @@ def index():
         <p><a href="%s">Login</p>
         <p><a href="%s">Login with next</p>
     """ % (googlelogin.login_url(),
-           googlelogin.login_url(next=".profile"))
+           googlelogin.login_url(next=url_for('.profile')))
 
 @app.route('/profile')
 @login_required

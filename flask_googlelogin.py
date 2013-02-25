@@ -45,14 +45,8 @@ class GoogleLogin(object):
         self.flow = OAuth2WebServerFlow(
             app.config.get('GOOGLE_LOGIN_CLIENT_ID'),
             app.config.get('GOOGLE_LOGIN_CLIENT_SECRET'),
-            scopes, redirect_uri=app.config.get('GOOGLE_LOGIN_REDIRECT_URI'))
-
-        # Step 1) Redirect to auth page
-        auth_url = self.flow.step1_get_authorize_url()
-
-        # Set views to OAuth2 authorization urls
-        self.login_manager.login_view = auth_url
-        self.login_manager.refresh_view = auth_url
+            scopes)
+        self.redirect_uri = app.config.get('GOOGLE_LOGIN_REDIRECT_URI')
 
         # Clear flashed messages since we redirect to auth immediately
         self.login_manager.login_message = None
@@ -63,7 +57,8 @@ class GoogleLogin(object):
 
     def login_url(self, **params):
         """Return login url with params encoded in state"""
-        url = self.login_manager.login_view
+        redirect_uri = params.get('redirect_uri', self.redirect_uri)
+        url = self.flow.step1_get_authorize_url(redirect_uri=redirect_uri)
         state = dict(nonce=make_secure_token(**params), **params)
         return url + '&' + urlencode(dict(state=b64encode(urlencode(state))))
 

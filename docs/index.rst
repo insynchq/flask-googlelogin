@@ -28,7 +28,7 @@ A `flaskext.login.LoginManager` instance is implicitly created in
     googlelogin = GoogleLogin(app, login_manager)
 
 .. tip::
-    `flask_googlelogin` imports `*` from `flaskext.login` so you can do
+    `flask_googlelogin` recursively imports from `flaskext.login` so you can do
     something like this::
 
         from flask_googlelogin import LoginManager
@@ -54,20 +54,22 @@ Next, you need to specify an OAuth2 callback route::
         else:
             return googlelogin.login_manager.unauthorized()
 
-Notice that you still have to do the call for `login_user`. Flask-GoogleLogin
-just sets the `login_view` and `refresh_view` of the
-`flaskext.login.LoginManager` to Google's OAuth2 authorization url.
-This is step one of the Google's OAuth2 webserver flow. The second step
-(retrieving tokens) happens inside the `GoogleLogin.oauth2callback` decorator.
-After getting tokens, they're used to fetch `userinfo`, which is then passed
-as a keyword argument to the decorated view function.
-
 Decorate views with `flaskext.login.login_required` and you're done! ::
 
     @app.route('/profile')
     @login_required
     def profile():
         return render_template('profile.html')
+
+Get the Google auth URL using `GoogleLogin.login_url`. You can also include
+extra params to `login_url` and they'll be passed to your
+`GoogleLogin.oauth2callback`::
+
+    googlelogin.login_url(next=url_for('.profile'))
+
+And if you have multiple redirect URIs::
+
+    googlelogin.login_url(redirect_uri=url_for('admin'))
 
 Configuration
 =============

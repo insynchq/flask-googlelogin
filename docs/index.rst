@@ -37,7 +37,7 @@ Next, you need to specify an OAuth2 callback route::
 
     @app.route('/oauth2callback')
     @googlelogin.oauth2callback
-    def create_or_update_user(userinfo=None, credentials=None, **kwargs):
+    def create_or_update_user(userinfo=None, credentials=None, **params):
         if userinfo and credentials:
             user = User.filter_by(google_id=userinfo['id']).first()
             if user:
@@ -89,7 +89,13 @@ API
 
     .. automethod:: init_app
 
+    .. automethod:: login_url
+
+    .. automethod:: unauthorized_callback
+
     .. automethod:: login
+
+    .. automethod:: get_params
 
     .. automethod:: oauth2callback
 
@@ -97,5 +103,4 @@ API
 
 TODO
 ====
-* OAuth2 `state` support
 * Use `access_token` for `is_authenticated`

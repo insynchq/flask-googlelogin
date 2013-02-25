@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, url_for, redirect
 
 from flask_googlelogin import (GoogleLogin, UserMixin, login_required,
                                login_user, logout_user, current_user)
@@ -29,8 +29,16 @@ def get_user(userid):
 
 
 @app.route('/')
-@login_required
 def index():
+    return """
+        <p><a href="%s">Login</p>
+        <p><a href="%s">Login with next</p>
+    """ % (googlelogin.login_url(),
+           googlelogin.login_url(next=".profile"))
+
+@app.route('/profile')
+@login_required
+def profile():
     return """
         <p>Hello, %s</p>
         <p><img src="%s" width="100" height="100"></p>
@@ -40,15 +48,10 @@ def index():
 
 @app.route('/oauth2callback')
 @googlelogin.oauth2callback
-def login(userinfo):
+def login(userinfo, credentials, next=None):
     user = users[userinfo['id']] = User(userinfo)
     login_user(user)
-    return """
-        <p>Logged in as:</p>
-        <textarea cols="80" rows="10"
-            style="font-family: monospace">%r</textarea>
-        <p><a href="/">Return to /</a></p>
-        """ % userinfo
+    return redirect(next or url_for('.profile'))
 
 
 @app.route('/logout')

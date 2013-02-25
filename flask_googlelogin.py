@@ -2,11 +2,15 @@
 Flask-GoogleLogin
 """
 
+from base64 import (urlsafe_b64encode as b64encode,
+                    urlsafe_b64decode as b64decode)
+from urllib import urlencode
+from urlparse import parse_qsl
 from functools import wraps
 import httplib2
 
 from apiclient.discovery import build
-from flask import request, abort
+from flask import request, redirect, abort
 from flask_login import *
 from oauth2client.client import OAuth2WebServerFlow
 
@@ -54,6 +58,19 @@ class GoogleLogin(object):
         self.login_manager.login_message = None
         self.login_manager.needs_refresh_message = None
 
+        # Set default unauthorized callback
+        self.login_manager.unauthorized_handler(self.unauthorized_callback)
+
+    def login_url(self, **params):
+        """Return login url with params encoded in state"""
+        url = self.login_manager.login_view
+        state = dict(nonce=make_secure_token(**params), **params)
+        return url + '&' + urlencode(dict(state=b64encode(urlencode(state))))
+
+    def unauthorized_callback(self):
+        """Redirect to login url with next param set as request.url"""
+        return redirect(self.login_url(next=request.url))
+
     def login(self):
         """Exchanges code for tokens and returns `userinfo`"""
         code = request.args.get('code')
@@ -74,18 +91,29 @@ class GoogleLogin(object):
 
         return userinfo, credentials
 
+    def get_params(self):
+        """Get params from state"""
+        return dict(parse_qsl(b64decode(str(request.args.get('state')))))
+
     def oauth2callback(self, view_func):
         """Decorator for OAuth2 callback. Calls `GoogleLogin.login` then
         passes results to `view_func`."""
         @wraps(view_func)
         def decorated(*args, **kwargs):
+            # Check nonce
+            params = self.get_params()
+            if params.pop('nonce') != make_secure_token(**params):
+                return self.login_manager.unauthorized()
+
+            # Get userinfo and credentials
             userinfo, credentials = self.login()
+
             if userinfo:
-                kwargs.setdefault('userinfo', userinfo)
-                kwargs.setdefault('credentials', credentials)
-                return view_func(*args, **kwargs)
+                params.update(userinfo=userinfo, credentials=credentials)
+                return view_func(**params)
             else:
                 return self.login_manager.unauthorized()
+
         return decorated
 
     def user_loader(self, func):

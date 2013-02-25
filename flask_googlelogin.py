@@ -59,7 +59,7 @@ class GoogleLogin(object):
         """Return login url with params encoded in state"""
         redirect_uri = params.get('redirect_uri', self.redirect_uri)
         url = self.flow.step1_get_authorize_url(redirect_uri=redirect_uri)
-        state = dict(nonce=make_secure_token(**params), **params)
+        state = dict(sig=make_secure_token(**params), **params)
         return url + '&' + urlencode(dict(state=b64encode(urlencode(state))))
 
     def unauthorized_callback(self):
@@ -95,9 +95,9 @@ class GoogleLogin(object):
         passes results to `view_func`."""
         @wraps(view_func)
         def decorated(*args, **kwargs):
-            # Check nonce
+            # Checksig 
             params = self.get_params()
-            if params.pop('nonce') != make_secure_token(**params):
+            if params.pop('sig') != make_secure_token(**params):
                 return self.login_manager.unauthorized()
 
             # Get userinfo and credentials

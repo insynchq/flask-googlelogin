@@ -95,9 +95,9 @@ class GoogleLogin(object):
         passes results to `view_func`."""
         @wraps(view_func)
         def decorated(*args, **kwargs):
-            # Checksig 
+            # Check sig 
             params = self.get_params()
-            if params.pop('sig') != make_secure_token(**params):
+            if params.pop('sig', None) != make_secure_token(**params):
                 return self.login_manager.unauthorized()
 
             # Get userinfo and credentials

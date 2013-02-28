@@ -26,17 +26,24 @@ class GoogleLogin(object):
             self.login_manager = login_manager
         else:
             self.login_manager = LoginManager()
+
         if app:
             self.app = app
             self.init_app(app)
 
-    def init_app(self, app, login_manager=None):
+    def init_app(self, app, add_context_processor=True, login_manager=None):
         """Initialize with app configuration. Existing
         `flaskext.login.LoginManager` instance can be passed."""
 
+        if login_manager:
+            self.login_manager = login_manager
+        else:
+            self.login_manager = LoginManager()
+
         # Check if login manager has been init
         if not hasattr(app, 'login_manager'):
-            self.login_manager.init_app(app)
+            self.login_manager.init_app(app,
+                add_context_processor=add_context_processor)
 
         # Google OAuth2 web server flow
         scopes = app.config.get('GOOGLE_LOGIN_SCOPES', '').split(',')

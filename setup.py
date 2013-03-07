@@ -24,7 +24,7 @@ setup(
     zip_safe=False,
     platforms='any',
     install_requires=[
-        'google-api-python-client==1.0',
+        'requests<1.0',
         'Flask-Login==0.1.3',
     ],
     classifiers=[

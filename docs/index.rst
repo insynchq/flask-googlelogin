@@ -99,8 +99,6 @@ API
 
     .. automethod:: login
 
-    .. automethod:: get_params
-
     .. automethod:: oauth2callback
 
     .. automethod:: user_loader

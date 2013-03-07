@@ -65,10 +65,11 @@ Get the Google auth URL using `GoogleLogin.login_url`. You can also include
 extra params to `login_url` and they'll be passed to your
 `GoogleLogin.oauth2callback`::
 
-    googlelogin.login_url(next=url_for('.profile'))
+    googlelogin.login_url(section='notifications', next=url_for('.profile'))
 
-And if you have multiple redirect URIs::
+You can also configure Google auth url params::
 
+    googlelogin.login_url(approval_prompt='force', access_type='offline')
     googlelogin.login_url(redirect_uri=url_for('admin'))
 
 Configuration
@@ -81,7 +82,8 @@ Google API
 `GOOGLE_LOGIN_CLIENT_ID`     Client ID (create one at
                              https://code.google.com/apis/console)
 `GOOGLE_LOGIN_CLIENT_SECRET` Client Secret
-`GOOGLE_LOGIN_REDIRECT_URI`  Redirect URI
+`GOOGLE_LOGIN_CLIENT_SCOPES` Default scopes
+`GOOGLE_LOGIN_REDIRECT_URI`  Default redirect URI
 ============================ ===================================================
 
 API

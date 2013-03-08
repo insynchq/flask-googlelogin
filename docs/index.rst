@@ -62,7 +62,7 @@ Get the Google auth URL using `GoogleLogin.login_url`. You can also include
 extra params to `login_url` and they'll be passed to your
 `GoogleLogin.oauth2callback`::
 
-    googlelogin.login_url(section='notifications', next=url_for('.profile'))
+    googlelogin.login_url(params=dict(section='notifications', next=url_for('.profile')))
 
 You can also configure Google auth url params::
 

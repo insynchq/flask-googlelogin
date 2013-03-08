@@ -61,7 +61,8 @@ class GoogleLogin(object):
         app = getattr(self, 'app', current_app)
 
         kwargs.setdefault('access_type', 'online')
-        kwargs.setdefault('approval_prompt', 'auto')
+        if 'prompt' not in kwargs:
+            kwargs.setdefault('approval_prompt', 'auto')
 
         scopes = kwargs.pop('scopes',
                             app.config.get('GOOGLE_LOGIN_SCOPES', '')

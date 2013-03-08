@@ -87,7 +87,7 @@ class GoogleLogin(object):
 
     def unauthorized_callback(self):
         """Redirect to login url with next param set as request.url"""
-        return redirect(self.login_url(next=request.url))
+        return redirect(self.login_url(params=dict(next=request.url)))
 
     def login(self, code, redirect_uri):
         """Exchanges code for tokens and returns retrieved `userinfo` and

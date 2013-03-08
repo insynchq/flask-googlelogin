@@ -38,7 +38,7 @@ def index():
         <p><a href="%s">Login with extra scope</p>
     """ % (
         googlelogin.login_url(),
-        googlelogin.login_url(extra='large-fries'),
+        googlelogin.login_url(params=dict(extra='large-fries')),
         googlelogin.login_url(
             scopes=['https://www.googleapis.com/auth/drive'],
             access_type='offline'),

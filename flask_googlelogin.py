@@ -53,15 +53,17 @@ class GoogleLogin(object):
         # Set default unauthorized callback
         self.login_manager.unauthorized_handler(self.unauthorized_callback)
 
-    def login_url(self, **params):
+    def login_url(self, params=None, **kwargs):
         """Return login url with params encoded in state"""
+        if not params:
+            params = {}
 
         app = getattr(self, 'app', current_app)
 
-        access_type = params.pop('access_type', 'online')
-        approval_prompt = params.pop('approval_prompt', 'auto')
+        kwargs.setdefault('access_type', 'online')
+        kwargs.setdefault('approval_prompt', 'auto')
 
-        scopes = params.pop('scopes',
+        scopes = kwargs.pop('scopes',
                             app.config.get('GOOGLE_LOGIN_SCOPES', '')
                                 .split(','))
         scopes = map(lambda x: x.strip('/'), scopes)
@@ -69,8 +71,8 @@ class GoogleLogin(object):
             scopes.append(USERINFO_PROFILE_SCOPE)
 
         # NOTE: redirect_uri is stored in state for use later in getting token
-        params.setdefault('redirect_uri',
-                          app.config['GOOGLE_LOGIN_REDIRECT_URI'])
+        params['redirect_uri'] = kwargs.pop('redirect_uri',
+            app.config['GOOGLE_LOGIN_REDIRECT_URI'])
 
         state = b64encode(urlencode(dict(sig=make_secure_token(**params),
                                          **params)))
@@ -78,11 +80,10 @@ class GoogleLogin(object):
         return GOOGLE_OAUTH2_AUTH_URL + '?' + urlencode(
             dict(response_type='code',
                  client_id=app.config['GOOGLE_LOGIN_CLIENT_ID'],
-                 access_type=access_type,
-                 approval_prompt=approval_prompt,
                  scope=' '.join(scopes),
                  redirect_uri=params['redirect_uri'],
-                 state=state))
+                 state=state,
+                 **kwargs))
 
     def unauthorized_callback(self):
         """Redirect to login url with next param set as request.url"""

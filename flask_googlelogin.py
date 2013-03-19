@@ -73,7 +73,7 @@ class GoogleLogin(object):
 
         # NOTE: redirect_uri is stored in state for use later in getting token
         params['redirect_uri'] = kwargs.pop('redirect_uri',
-            app.config['GOOGLE_LOGIN_REDIRECT_URI'])
+            app.config.get('GOOGLE_LOGIN_REDIRECT_URI'))
 
         state = b64encode(urlencode(dict(sig=make_secure_token(**params),
                                          **params)))

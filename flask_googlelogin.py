@@ -43,7 +43,8 @@ class GoogleLogin(object):
 
         # Check if login manager has been init
         if not hasattr(app, 'login_manager'):
-            self.login_manager.init_app(app,
+            self.login_manager.init_app(
+                app,
                 add_context_processor=add_context_processor)
 
         # Clear flashed messages since we redirect to auth immediately
@@ -66,13 +67,13 @@ class GoogleLogin(object):
 
         scopes = kwargs.pop('scopes',
                             app.config.get('GOOGLE_LOGIN_SCOPES', '')
-                                .split(','))
-        scopes = map(lambda x: x.strip('/'), scopes)
+                            .split(','))
         if USERINFO_PROFILE_SCOPE not in scopes:
             scopes.append(USERINFO_PROFILE_SCOPE)
 
         # NOTE: redirect_uri is stored in state for use later in getting token
-        params['redirect_uri'] = kwargs.pop('redirect_uri',
+        params['redirect_uri'] = kwargs.pop(
+            'redirect_uri',
             app.config.get('GOOGLE_LOGIN_REDIRECT_URI'))
 
         state = b64encode(urlencode(dict(sig=make_secure_token(**params),
@@ -102,13 +103,13 @@ class GoogleLogin(object):
             grant_type='authorization_code',
             client_id=app.config['GOOGLE_LOGIN_CLIENT_ID'],
             client_secret=app.config['GOOGLE_LOGIN_CLIENT_SECRET'],
-            )).json
+        )).json
         if not token or token.get('error'):
             abort(400)
 
         userinfo = requests.get(GOOGLE_OAUTH2_USERINFO_URL, params=dict(
             access_token=token['access_token'],
-            )).json
+        )).json
         if not userinfo or userinfo.get('error'):
             abort(400)
 
@@ -124,7 +125,7 @@ class GoogleLogin(object):
             if not code:
                 abort(400)
 
-            # Check sig 
+            # Check sig
             params = dict(parse_qsl(b64decode(str(request.args.get('state')))))
             if params.pop('sig', None) != make_secure_token(**params):
                 return self.login_manager.unauthorized()

@@ -13,7 +13,7 @@ from setuptools import setup
 
 setup(
     name='Flask-GoogleLogin',
-    version='0.1.5',
+    version='0.1.6',
     url='https://github.com/marksteve/flask-googlelogin',
     license='MIT',
     author="Mark Steve Samson",
@@ -25,7 +25,7 @@ setup(
     platforms='any',
     install_requires=[
         'requests<1.0',
-        'Flask-Login==0.1.3',
+        'Flask-Login==0.2.2',
     ],
     classifiers=[
         'Development Status :: 4 - Beta',

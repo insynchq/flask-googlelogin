@@ -9,7 +9,8 @@ from urlparse import parse_qsl
 from functools import wraps
 
 from flask import request, redirect, abort, current_app
-from flask_login import *
+from flask_login import LoginManager, make_secure_token
+
 import requests
 
 

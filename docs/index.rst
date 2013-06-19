@@ -19,19 +19,13 @@ Get started by creating a `GoogleLogin` instance::
     googlelogin = GoogleLogin()
     googlelogin.init_app(app)
 
-A `flaskext.login.LoginManager` instance is implicitly created in
+A `flask_login.LoginManager` instance is implicitly created in
 `GoogleLogin.init_app` but you can also pass your own::
 
     from flask_login import LoginManager
     login_manager = LoginManager()
     login_manager.init_app(app)
     googlelogin = GoogleLogin(app, login_manager)
-
-.. tip::
-    `flask_googlelogin` recursively imports from `flaskext.login` so you can do
-    something like this::
-
-        from flask_googlelogin import LoginManager
 
 Next, you need to specify an OAuth2 callback route::
 
@@ -51,7 +45,7 @@ Next, you need to specify an OAuth2 callback route::
         login_user(user)
         return redirect(url_for('index'))
 
-Decorate views with `flaskext.login.login_required` and you're done! ::
+Decorate views with `flask_login.login_required` and you're done! ::
 
     @app.route('/profile')
     @login_required

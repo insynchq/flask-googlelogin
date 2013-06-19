@@ -2,8 +2,9 @@ import json
 
 from flask import Flask, url_for, redirect, session
 
-from flask_googlelogin import (GoogleLogin, UserMixin, login_required,
-                               login_user, logout_user, current_user)
+from flask_login import (UserMixin, login_required, login_user, logout_user,
+                         current_user)
+from flask_googlelogin import GoogleLogin
 
 
 users = {}
@@ -43,6 +44,7 @@ def index():
             scopes=['https://www.googleapis.com/auth/drive'],
             access_type='offline'),
         )
+
 
 @app.route('/profile')
 @login_required

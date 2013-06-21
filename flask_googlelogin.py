@@ -76,13 +76,22 @@ class GoogleLogin(object):
         return self.app.config.get('GOOGLE_LOGIN_REDIRECT_URI')
 
     def login_url(self, params=None, **kwargs):
-        """Return login url with params encoded in state"""
+        """Return login url with params encoded in state
+
+        Available Google auth server params:
+        prompt: none, select_account, consent
+        approval_prompt: force, auto
+        access_type: online, offline
+        scopes: string (separated with commas) or list
+        redirect_uri: string
+        login_hint: string
+        """
         if not params:
             params = {}
 
         kwargs.setdefault('access_type', 'online')
 
-        if 'approval_prompt' not in kwargs:
+        if 'prompt' not in kwargs:
             kwargs.setdefault('approval_prompt', 'auto')
 
         scopes = kwargs.pop('scopes', self.scopes.split(','))

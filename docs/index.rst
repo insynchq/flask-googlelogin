@@ -90,10 +90,9 @@ API
 
     .. automethod:: login
 
+    .. automethod:: get_access_token
+
     .. automethod:: oauth2callback
 
     .. automethod:: user_loader
 
-TODO
-====
-* Use `access_token` for `is_authenticated`

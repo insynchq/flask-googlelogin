@@ -30,7 +30,7 @@ class GoogleLogin(object):
             self.login_manager = LoginManager()
 
         if app:
-            self.app = app
+            self._app = app
             self.init_app(app)
 
     def init_app(self, app, add_context_processor=True, login_manager=None):
@@ -55,34 +55,49 @@ class GoogleLogin(object):
         # Set default unauthorized callback
         self.login_manager.unauthorized_handler(self.unauthorized_callback)
 
+    @property
+    def app(self):
+        return getattr(self, '_app', current_app)
+
+    @property
+    def scopes(self):
+        return self.app.config.get('GOOGLE_LOGIN_SCOPES', '')
+
+    @property
+    def client_id(self):
+        return self.app.config['GOOGLE_LOGIN_CLIENT_ID']
+
+    @property
+    def client_secret(self):
+        return self.app.config['GOOGLE_LOGIN_CLIENT_SECRET']
+
+    @property
+    def redirect_uri(self):
+        return self.app.config.get('GOOGLE_LOGIN_REDIRECT_URI')
+
     def login_url(self, params=None, **kwargs):
         """Return login url with params encoded in state"""
         if not params:
             params = {}
 
-        app = getattr(self, 'app', current_app)
-
         kwargs.setdefault('access_type', 'online')
-        if 'prompt' not in kwargs:
+
+        if 'approval_prompt' not in kwargs:
             kwargs.setdefault('approval_prompt', 'auto')
 
-        scopes = kwargs.pop('scopes',
-                            app.config.get('GOOGLE_LOGIN_SCOPES', '')
-                            .split(','))
+        scopes = kwargs.pop('scopes', self.scopes.split(','))
         if USERINFO_PROFILE_SCOPE not in scopes:
             scopes.append(USERINFO_PROFILE_SCOPE)
 
         # NOTE: redirect_uri is stored in state for use later in getting token
-        params['redirect_uri'] = kwargs.pop(
-            'redirect_uri',
-            app.config.get('GOOGLE_LOGIN_REDIRECT_URI'))
+        params['redirect_uri'] = kwargs.pop('redirect_uri', self.redirect_uri)
 
         state = b64encode(urlencode(dict(sig=make_secure_token(**params),
                                          **params)))
 
         return GOOGLE_OAUTH2_AUTH_URL + '?' + urlencode(
             dict(response_type='code',
-                 client_id=app.config['GOOGLE_LOGIN_CLIENT_ID'],
+                 client_id=self.client_id,
                  scope=' '.join(scopes),
                  redirect_uri=params['redirect_uri'],
                  state=state,
@@ -96,14 +111,12 @@ class GoogleLogin(object):
         """Exchanges code for tokens and returns retrieved `userinfo` and
         `token`"""
 
-        app = getattr(self, 'app', current_app)
-
         token = requests.post(GOOGLE_OAUTH2_TOKEN_URL, data=dict(
             code=code,
             redirect_uri=redirect_uri,
             grant_type='authorization_code',
-            client_id=app.config['GOOGLE_LOGIN_CLIENT_ID'],
-            client_secret=app.config['GOOGLE_LOGIN_CLIENT_SECRET'],
+            client_id=self.client_id,
+            client_secret=self.client_secret,
         )).json
         if not token or token.get('error'):
             abort(400)

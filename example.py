@@ -38,12 +38,15 @@ def index():
         <p><a href="%s">Login with extra params</p>
         <p><a href="%s">Login with extra scope</p>
     """ % (
-        googlelogin.login_url(),
-        googlelogin.login_url(params=dict(extra='large-fries')),
+        googlelogin.login_url(approval_prompt='force'),
+        googlelogin.login_url(approval_prompt='force',
+                              params=dict(extra='large-fries')),
         googlelogin.login_url(
+            approval_prompt='force',
             scopes=['https://www.googleapis.com/auth/drive'],
-            access_type='offline'),
-        )
+            access_type='offline',
+        ),
+    )
 
 
 @app.route('/profile')

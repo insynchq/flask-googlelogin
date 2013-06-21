@@ -35,7 +35,7 @@ class GoogleLogin(object):
 
     def init_app(self, app, add_context_processor=True, login_manager=None):
         """Initialize with app configuration. Existing
-        `flaskext.login.LoginManager` instance can be passed."""
+        `flask_login.LoginManager` instance can be passed."""
 
         if login_manager:
             self.login_manager = login_manager
@@ -170,5 +170,5 @@ class GoogleLogin(object):
 
     def user_loader(self, func):
         """Shortcut to `login_manager`'s
-        `flaskext.login.LoginManager.user_loader`"""
+        `flask_login.LoginManager.user_loader`"""
         self.login_manager.user_loader(func)

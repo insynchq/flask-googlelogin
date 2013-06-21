@@ -129,6 +129,21 @@ class GoogleLogin(object):
 
         return token, userinfo
 
+    def get_access_token(self, refresh_token):
+        """Use a refresh token to obtain a new access token"""
+
+        token = requests.post(GOOGLE_OAUTH2_TOKEN_URL, data=dict(
+            refresh_token=refresh_token,
+            grant_type='refresh_token',
+            client_id=self.client_id,
+            client_secret=self.client_secret,
+        )).json
+
+        if not token or token.get('error'):
+            return
+
+        return token
+
     def oauth2callback(self, view_func):
         """Decorator for OAuth2 callback. Calls `GoogleLogin.login` then
         passes results to `view_func`."""

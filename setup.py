@@ -25,7 +25,7 @@ setup(
     platforms='any',
     install_requires=[
         'requests<1.0',
-        'Flask-Login==0.2.2',
+        'Flask-Login>=0.2,<0.3',
     ],
     classifiers=[
         'Development Status :: 4 - Beta',

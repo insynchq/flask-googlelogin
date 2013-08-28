@@ -79,6 +79,7 @@ class GoogleLogin(object):
         """Return login url with params encoded in state
 
         Available Google auth server params:
+        response_type: code, token
         prompt: none, select_account, consent
         approval_prompt: force, auto
         access_type: online, offline
@@ -89,6 +90,7 @@ class GoogleLogin(object):
         if not params:
             params = {}
 
+        kwargs.setdefault('response_type', 'code')
         kwargs.setdefault('access_type', 'online')
 
         if 'prompt' not in kwargs:
@@ -105,8 +107,7 @@ class GoogleLogin(object):
                                          **params)))
 
         return GOOGLE_OAUTH2_AUTH_URL + '?' + urlencode(
-            dict(response_type='code',
-                 client_id=self.client_id,
+            dict(client_id=self.client_id,
                  scope=' '.join(scopes),
                  redirect_uri=params['redirect_uri'],
                  state=state,

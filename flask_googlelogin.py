@@ -8,7 +8,7 @@ from urllib import urlencode
 from urlparse import parse_qsl
 from functools import wraps
 
-from flask import request, redirect, abort, current_app
+from flask import request, redirect, abort, current_app, url_for
 from flask_login import LoginManager, make_secure_token
 
 import requests
@@ -79,6 +79,10 @@ class GoogleLogin(object):
     def redirect_uri(self):
         return self.app.config.get('GOOGLE_LOGIN_REDIRECT_URI')
 
+    @property
+    def redirect_scheme(self):
+        return self.app.config.get('GOOGLE_LOGIN_REDIRECT_SCHEME', 'http')
+
     def sign_params(self, params):
         return b64encode(urlencode(dict(sig=make_secure_token(**params),
                                         **params)))
@@ -127,7 +131,7 @@ class GoogleLogin(object):
 
     def exchange_code(self, code, redirect_uri):
         """
-        Exchanges code for tokens and returns retrieved `userinfo` and `token`
+        Exchanges code for token/s
         """
 
         token = requests.post(GOOGLE_OAUTH2_TOKEN_URL, data=dict(
@@ -186,7 +190,14 @@ class GoogleLogin(object):
 
             # Web server flow
             if code:
-                token = self.exchange_code(code, request.url)
+                token = self.exchange_code(
+                    code,
+                    url_for(
+                        request.endpoint,
+                        _external=True,
+                        _scheme=self.redirect_scheme,
+                    ),
+                )
                 userinfo = self.get_userinfo(token['access_token'])
                 params.update(token=token, userinfo=userinfo)
 

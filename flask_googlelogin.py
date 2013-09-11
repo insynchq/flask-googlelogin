@@ -114,7 +114,7 @@ class GoogleLogin(object):
             scopes.append(USERINFO_PROFILE_SCOPE)
 
         redirect_uri = kwargs.pop('redirect_uri', self.redirect_uri)
-        state = self.sign_params(params)
+        state = self.sign_params(params or {})
 
         return GOOGLE_OAUTH2_AUTH_URL + '?' + urlencode(
             dict(client_id=self.client_id,

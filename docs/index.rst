@@ -73,7 +73,7 @@ Google API
 `GOOGLE_LOGIN_CLIENT_ID`     Client ID (create one at
                              https://code.google.com/apis/console)
 `GOOGLE_LOGIN_CLIENT_SECRET` Client Secret
-`GOOGLE_LOGIN_CLIENT_SCOPES` Default scopes
+`GOOGLE_LOGIN_SCOPES` Default scopes
 `GOOGLE_LOGIN_REDIRECT_URI`  Default redirect URI
 ============================ ===================================================
 

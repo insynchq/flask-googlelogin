@@ -16,7 +16,8 @@ import requests
 
 GOOGLE_OAUTH2_AUTH_URL = 'https://accounts.google.com/o/oauth2/auth'
 GOOGLE_OAUTH2_TOKEN_URL = 'https://accounts.google.com/o/oauth2/token'
-GOOGLE_OAUTH2_USERINFO_URL = 'https://www.googleapis.com/oauth2/v1/userinfo'
+GOOGLE_OAUTH2_USERINFO_URL = 'https://www.googleapis.com/oauth2/v2/userinfo'
+USERINFO_EMAIL_SCOPE = 'https://www.googleapis.com/auth/userinfo.email'
 USERINFO_PROFILE_SCOPE = 'https://www.googleapis.com/auth/userinfo.profile'
 
 

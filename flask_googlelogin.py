@@ -43,8 +43,6 @@ class GoogleLogin(object):
 
         if login_manager:
             self.login_manager = login_manager
-        else:
-            self.login_manager = LoginManager()
 
         # Check if login manager has been init
         if not hasattr(app, 'login_manager'):

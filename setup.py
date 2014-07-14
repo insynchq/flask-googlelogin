@@ -24,7 +24,7 @@ setup(
     zip_safe=False,
     platforms='any',
     install_requires=[
-        'requests<1.0',
+        'requests>=2.0,<3.0',
         'Flask-Login>=0.2,<0.3',
     ],
     classifiers=[

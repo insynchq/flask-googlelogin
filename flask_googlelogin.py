@@ -36,16 +36,12 @@ class GoogleLogin(object):
             self._app = app
             self.init_app(app)
 
-    def init_app(self, app, add_context_processor=True, login_manager=None):
+    def init_app(self, app, add_context_processor=True):
         """
-        Initialize with app configuration. Existing
-        `flask_login.LoginManager` instance can be passed.
+        Initialize with app configuration
         """
 
-        if login_manager:
-            self.login_manager = login_manager
-
-        # Check if login manager has been init
+        # Check if login manager has been initialized
         if not hasattr(app, 'login_manager'):
             self.login_manager.init_app(
                 app,

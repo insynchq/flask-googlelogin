@@ -1,3 +1,7 @@
+NO LONGER MAINTAINED
+--------------------
+Please use https://github.com/marksteve/flask-oauth2-login instead
+
 Flask-GoogleLogin
 -----------------
 Flask-GoogleLogin extends Flask-Login to use Google's OAuth2 authorization
